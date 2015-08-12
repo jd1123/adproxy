@@ -13,7 +13,6 @@ func main() {
 	fmt.Println("Starting ad proxy on port " + LISTENPORT)
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.Verbose = false
-
 	f, err := os.OpenFile("log/proxylog.log", os.O_RDWR|os.O_APPEND|os.O_CREATE, 0660)
 	if err != nil {
 		fmt.Println("File error: ", err)
@@ -29,4 +28,5 @@ func main() {
 	}
 	log.Fatalln(http.ListenAndServe(":"+LISTENPORT, proxy))
 	fmt.Println("Closing ad proxy")
+
 }

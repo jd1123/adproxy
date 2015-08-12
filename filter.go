@@ -7,7 +7,9 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/elazarl/goproxy"
 )
@@ -47,14 +49,22 @@ func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *ht
 	}
 
 	if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
-		fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
+		if VERB {
+			fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
+		}
 		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
 	}
 
 	b := checkBody(&req.Body)
-	if strings.Contains(b, "adstate") {
+
+	// Flag for response spoofing
+	g := false
+	if strings.Contains(b, "adstate") && g {
 		//return req, goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
-		fmt.Println(b)
+		nresp := CreateResponse(req)
+		return req, &nresp
+
+		//fmt.Println(b)
 	}
 
 	return req, nil
@@ -69,5 +79,47 @@ func filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 			resp.Body = bb
 		}
 	}
+
+	//	if strings.Contains(resp.Request.URL.String(), "s.hulu.com") {
+	//		PrintResponse(*resp)
+	//	}
+
 	return resp
+}
+
+func CreateResponse(req *http.Request) http.Response {
+	n := time.Now()
+	layout := "Sun, 09 Aug 1999 18:20:22 GMT"
+	finalDate := n.Format(layout)
+	nresp := goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
+	nresp.Status = "200 OK"
+	nresp.ProtoMajor = 1
+	nresp.ProtoMinor = 1
+	nresp.Header.Add("Cache-Control", "max-age=0, no-cache, no-store")
+	nresp.Header.Add("Connection", "keep-alive")
+	nresp.Header.Add("Date", finalDate)
+	nresp.Header.Add("Server", "nginx/1.0.12")
+	nresp.Header.Add("Vary", "Accept-Encoding")
+	return *nresp
+}
+
+func formatTime(t time.Time) string {
+	h := strconv.Itoa(t.Hour())
+	m := strconv.Itoa(t.Minute())
+	s := strconv.Itoa(t.Second())
+	d := strconv.Itoa(t.Day())
+	y := strconv.Itoa(t.Year())
+	mnth := t.Month().String()[:3]
+	wd := t.Weekday().String()[:3]
+	if len(s) == 1 {
+		s = "0" + s
+	}
+	if len(d) == 1 {
+		d = "0" + d
+	}
+
+	fmt.Println(h, m, s, d, y, wd)
+	str := wd + ", " + d + " " + mnth + " " + y + " " + h + ":" + m + ":" + s
+	fmt.Println(str)
+	return ""
 }
