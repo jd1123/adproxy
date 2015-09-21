@@ -20,6 +20,16 @@ func main() {
 	}
 	defer f.Close()
 
+	proxy.NonproxyHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		if req.Host == "" {
+			fmt.Fprintln(w, "Cannot handle request without Host header, e.g., HTTP 1.0")
+			return
+		}
+		req.URL.Scheme = "http"
+		req.URL.Host = req.Host
+		proxy.ServeHTTP(w, req)
+	})
+
 	log.SetOutput(f)
 
 	if FILTER {
