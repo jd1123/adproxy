@@ -87,10 +87,19 @@ usage(){
 	echo "See https://learn.adafruit.com/setting-up-a-raspberry-pi-as-a-wifi-access-point/install-software for info on setting up the RPi as an AP." 
 }
 
+setup_iptables(){
+	#This needs to be made into an init script.
+	sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"   #use sed to change the /etc/sysctl.conf to make this permanent
+	sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    sudo iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
+    sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT	
+}
+
 finally(){
 	echo "Finally you need to start all services at startup. There are some problems with hostapd."
 	sudo update-rc.d hostapd enable
 	sudo update-rc.h isc-dhcp-server enable
+	setup_iptables
 }
 
 usage
@@ -100,3 +109,8 @@ if [ "$EUID" -eq 0 ]
 	exit 1
 fi
 
+install_utils
+install_go
+install_dhcp_server
+install_hostapd
+finally
