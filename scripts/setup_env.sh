@@ -48,7 +48,7 @@ install_hostapd(){
 	sudo mv hostapd.conf hostapd.conf.bak
 	echo "About to make a conf file for hostapd. You will need to change this depending"
 	echo "on which driver you use. rtl871xdrv also requires a pre-compiled binary which you"
-	echo "can get from some address I cannot remember, but I will put it here. This is"
+	echo "can get from https://learn.adafruit.com/setting-up-a-raspberry-pi-as-a-wifi-access-point/install-software. This is"
 	echo "specifically for the Edimax dongle that I bought of off amazon."
 	echo "interface=wlan0
 #driver=nl80211
@@ -65,6 +65,8 @@ wpa_key_mgmt=WPA-PSK
 wpa_pairwise=TKIP
 rsn_pairwise=CCMP
 " | sudo tee /etc/hostapd/hostapd.conf
+	echo "Edit /etc/default/hostapd and replace #DAEMON_CONF with the right path (and uncomment it)."
+	echo "That right path is /etc/hostapd/hostapd.conf"
 }
 
 install_adproxy(){
@@ -82,10 +84,13 @@ usage(){
 	echo
 	echo "You will also need an ethernet connection and a Wifi dongle to access it."
 	echo "This script has NOT been tested. Use at your own risk."
+	echo "See https://learn.adafruit.com/setting-up-a-raspberry-pi-as-a-wifi-access-point/install-software for info on setting up the RPi as an AP." 
 }
 
 finally(){
 	echo "Finally you need to start all services at startup. There are some problems with hostapd."
+	sudo update-rc.d hostapd enable
+	sudo update-rc.h isc-dhcp-server enable
 }
 
 usage

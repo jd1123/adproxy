@@ -1,7 +1,6 @@
-# Ad Proxy in Go for Xfinity
+# Ad Proxy
 
-This is a program to block ads for the Xfninity app on the iPad. It uses an HTTP and CONNECT proxy to filter adserver requests.
-It also blocks analytics requests from the app. I don't know what these are but they can't be good.
+This is the code and setup scripts to turn your Raspberry pi into a hardware adblocker. Connect to the AP and it blocks all ads according to the filtes you set
 
 ## How did I do it?
 
@@ -11,7 +10,7 @@ Right now, it works for Xfinity, but likely can be extended for Hulu as well.
 
 ## Can it be broken?
 
-If Xfinity ever decides to implment ads over TLS, it would probably make it much harder to do this, but not impossible. One would need the TLS keys or implement sslstrip over the protocol and it would possibly still work. This would require much more technical knowhow than I have at the moment. Would be a fun project though!
+Yes, TLS will break this. Need to work on this.
 
 ## Shout outs
 
@@ -19,13 +18,7 @@ Thank you to elazarl (https://github.com/elazarl) for the goproxy project, on wh
 
 ## How do I get it to work?
 
-Right now, you need a linux box with go installed. Build it, then run the server:
-```
-cd /path/to/project
-go build
-./adproxy
-```
-Point your device to your server as an http proxy, and presto, it works.
+It's not done. Run the setup script it will turn your pi into a shitty router. It needs to be looked at because it will only work for certain wifi dongles. You also need to follow additional instructions about getting hostapd to work for the RASOMETHINGOROTHER chipset.
 
 ## Why do this?
 
