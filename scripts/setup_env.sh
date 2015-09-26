@@ -70,10 +70,16 @@ rsn_pairwise=CCMP
 }
 
 install_adproxy(){
-	echo "About to install the adproxy code..."
-	cd
-	git clone <repo_name_here>
-	cd
+	echo "About to install the adproxy..."
+	echo "This assumes your code is sitting in ~/code/go/src/adproxy"
+	mkdir -p ~/code/go/src/
+	cd ~/code/go/src
+	git clone git@gitlab.crumpleup.com:jd/adproxy.git
+	cd ~/code/go/src/adproxy
+	go build
+	sudo cp adproxy /usr/sbin
+	sudo cp ~/code/go/src/adproxy/scripts/initscripts/adproxy /etc/init.d/
+	sudo update-rc.d adproxy enable
 }
 
 usage(){
@@ -88,11 +94,14 @@ usage(){
 }
 
 setup_iptables(){
-	#This needs to be made into an init script.
+	# This needs to be made into an init script.
 	sudo sh -c "echo 1 > /proc/sys/net/ipv4/ip_forward"   #use sed to change the /etc/sysctl.conf to make this permanent
 	sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
     sudo iptables -A FORWARD -i eth0 -o wlan0 -m state --state RELATED,ESTABLISHED -j ACCEPT
     sudo iptables -A FORWARD -i wlan0 -o eth0 -j ACCEPT	
+	# redirect http to adproxy
+	iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 9000
+	# something needs to be done about https. it needs to go through the proxy, but maybe not...
 }
 
 finally(){
@@ -113,4 +122,5 @@ install_utils
 install_go
 install_dhcp_server
 install_hostapd
+install_adproxy
 finally
