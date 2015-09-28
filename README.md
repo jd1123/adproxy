@@ -8,6 +8,12 @@ I started by intercepting app traffic using wireshark and monitored the traffic.
 The app hits an adserver to download the ad manifest for a tv show via HTTP, and I filter these requests and return an empty response body.
 Right now, it works for Xfinity, but likely can be extended for Hulu as well.
 
+## Hardware
+To get this to work you need:
+* 1 Raspberry Pi
+* 1 Wifi Dongle (this assumes the Edimax dongle from Amazon)
+* 1 Ethernet Cable
+
 ## Can it be broken?
 
 Yes, TLS will break this. Need to work on this.

@@ -72,6 +72,7 @@ rsn_pairwise=CCMP
 install_adproxy(){
 	echo "About to install the adproxy..."
 	echo "This assumes your code is sitting in ~/code/go/src/adproxy"
+	go get github.com/elazarl/goproxy
 	mkdir -p ~/code/go/src/
 	cd ~/code/go/src
 	git clone git@gitlab.crumpleup.com:jd/adproxy.git

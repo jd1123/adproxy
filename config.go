@@ -21,7 +21,7 @@ var FAKERESPONSE = LoadFakeResponse()
 var ContentTypeJSON = "application/json; charset=utf-8"
 
 func LoadFakeResponse() string {
-	f, err := os.OpenFile("dat/response", os.O_RDONLY, 0660)
+	f, err := os.OpenFile("/etc/adproxy/dat/response", os.O_RDONLY, 0660)
 	if err != nil {
 		fmt.Println("File Error: ", err)
 		os.Exit(1)
@@ -36,7 +36,7 @@ func LoadFakeResponse() string {
 }
 
 func LoadFilterList() []string {
-	f, err := os.OpenFile("dat/filterlist.txt", os.O_RDONLY, 0660)
+	f, err := os.OpenFile("/etc/adproxy/dat/filterlist.txt", os.O_RDONLY, 0660)
 	if err != nil {
 		fmt.Println("File Errror: ", err)
 		os.Exit(1)
