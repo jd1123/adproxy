@@ -37,7 +37,6 @@ func main() {
 
 	log.SetOutput(f)
 	// Setup modules
-	mods = append(mods, Xfinity{})
 
 	if FILTER {
 		proxy.OnRequest().DoFunc(filterRequest)

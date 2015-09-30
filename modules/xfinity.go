@@ -3,6 +3,8 @@ package modules
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -20,7 +22,7 @@ type Xfinity struct {
 	Name string
 }
 
-func (x Xfinity) filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
+func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 	for _, i := range FILTER_STRINGS {
 		if strings.Contains(resp.Request.URL.String(), i) {
 			fmt.Println("Adserver found... blocking: ", resp.Request.URL.String())
@@ -31,7 +33,7 @@ func (x Xfinity) filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *htt
 	return resp
 }
 
-func (x Xfinity) filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
+func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 	flag := 0
 	for _, i := range FILTER_STRINGS {
 		if strings.Contains(req.URL.String(), i) {
@@ -47,7 +49,24 @@ func (x Xfinity) filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.
 		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
 	}
 
-	b := checkBody(&req.Body)
+	//b := checkBody(&req.Body)
 
 	return req, nil
+}
+
+func checkBody(rc *io.ReadCloser) string {
+	var buf []byte
+	buf, _ = ioutil.ReadAll(*rc)
+	b := string(buf)
+	*rc = ioutil.NopCloser(bytes.NewBuffer(buf))
+	return b
+}
+
+// struct to implement io.ReadCloser
+type ClosingBuffer struct {
+	io.Reader
+}
+
+func (cb ClosingBuffer) Close() (err error) {
+	return
 }

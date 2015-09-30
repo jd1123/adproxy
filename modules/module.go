@@ -17,10 +17,6 @@ type MetaData struct {
 }
 
 type Module interface {
-	filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response)
-	filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response
-}
-
-func RegisterModule(m Module) {
-	mods = append(mods, m)
+	FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response)
+	FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response
 }

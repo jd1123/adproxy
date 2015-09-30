@@ -1,10 +1,7 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
@@ -17,27 +14,11 @@ returns a string with its contents, then restores
 the ReadCloser to its original state and returns its
 contents as a string. Passes ReadCloser by reference
 */
-func checkBody(rc *io.ReadCloser) string {
-	var buf []byte
-	buf, _ = ioutil.ReadAll(*rc)
-	b := string(buf)
-	*rc = ioutil.NopCloser(bytes.NewBuffer(buf))
-	return b
-}
-
-// struct to implement io.ReadCloser
-type ClosingBuffer struct {
-	io.Reader
-}
-
-func (cb ClosingBuffer) Close() (err error) {
-	return
-}
-
 // Request filter function
 func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
+	var resp *http.Response
 	for i := range mods {
-		req, resp := mods[i].filterRequest(req, ctx)
+		req, resp = mods[i].FilterRequest(req, ctx)
 	}
 	/*
 		flag := 0
@@ -69,13 +50,13 @@ func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *ht
 			//fmt.Println(b)
 		}
 	*/
-	return req, nil
+	return req, resp
 }
 
 // Response filter function
 func filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 	for i := range mods {
-		resp := mods[i].filterResponse(resp, ctx)
+		resp = mods[i].FilterResponse(resp, ctx)
 	}
 	return resp
 }
