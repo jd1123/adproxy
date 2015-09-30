@@ -1,6 +1,7 @@
 package modules
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/elazarl/goproxy"
@@ -10,10 +11,16 @@ import (
 The module interface
 */
 
-type MetaData struct {
+type MetaStruct struct {
 	ModuleName    string
 	VersionNumber string
 	Service       string
+}
+
+func (m MetaStruct) PrintMetaData() {
+	fmt.Println("Module", m.ModuleName, "loaded...")
+	fmt.Println("Version", m.VersionNumber)
+	fmt.Println("Service", m.Service)
 }
 
 type Module interface {

@@ -20,36 +20,6 @@ func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *ht
 	for i := range mods {
 		req, resp = mods[i].FilterRequest(req, ctx)
 	}
-	/*
-		flag := 0
-		for _, i := range FILTER_STRINGS {
-			if strings.Contains(req.URL.String(), i) {
-				flag = 1
-			}
-		}
-		if flag == 0 {
-			log.Println("Req: ", req.Method, ": ", req.URL.String())
-		}
-
-		if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
-			if VERB {
-				fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
-			}
-			return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
-		}
-
-		b := checkBody(&req.Body)
-
-		// Flag for response spoofing
-		g := false
-		if strings.Contains(b, "adstate") && g {
-			//return req, goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
-			nresp := CreateResponse(req)
-			return req, &nresp
-
-			//fmt.Println(b)
-		}
-	*/
 	return req, resp
 }
 
@@ -59,22 +29,6 @@ func filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 		resp = mods[i].FilterResponse(resp, ctx)
 	}
 	return resp
-}
-
-func CreateResponse(req *http.Request) http.Response {
-	n := time.Now()
-	layout := "Sun, 09 Aug 1999 18:20:22 GMT"
-	finalDate := n.Format(layout)
-	nresp := goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
-	nresp.Status = "200 OK"
-	nresp.ProtoMajor = 1
-	nresp.ProtoMinor = 1
-	nresp.Header.Add("Cache-Control", "max-age=0, no-cache, no-store")
-	nresp.Header.Add("Connection", "keep-alive")
-	nresp.Header.Add("Date", finalDate)
-	nresp.Header.Add("Server", "nginx/1.0.12")
-	nresp.Header.Add("Vary", "Accept-Encoding")
-	return *nresp
 }
 
 func formatTime(t time.Time) string {

@@ -16,14 +16,14 @@ import (
 	Xfinity module
 */
 
-var FILTER_STRINGS = []string{"adserver"}
+var filterStrings = []string{"adserver"}
 
 type Xfinity struct {
-	Name string
+	Metadata MetaStruct
 }
 
 func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
-	for _, i := range FILTER_STRINGS {
+	for _, i := range filterStrings {
 		if strings.Contains(resp.Request.URL.String(), i) {
 			fmt.Println("Adserver found... blocking: ", resp.Request.URL.String())
 			bb := ClosingBuffer{bytes.NewBufferString("0")}
@@ -35,7 +35,7 @@ func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *htt
 
 func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
 	flag := 0
-	for _, i := range FILTER_STRINGS {
+	for _, i := range filterStrings {
 		if strings.Contains(req.URL.String(), i) {
 			flag = 1
 		}
