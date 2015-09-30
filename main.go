@@ -8,13 +8,14 @@ import (
 
 	"github.com/elazarl/goproxy"
 	"github.com/jd1123/adproxy/modules"
+	"github.com/jd1123/adproxy/modules/xfinity"
 )
 
 var mods = make([]modules.Module, 0)
 
 func main() {
 	// Load the modules you want to use
-	RegisterModule(modules.Xfinity{})
+	RegisterModule(xfinity.Xfinity{})
 
 	// Begin
 	fmt.Println("Starting ad proxy on port " + LISTENPORT)
