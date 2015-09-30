@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/elazarl/goproxy"
+	"github.com/jd1123/adproxy/modules"
 )
 
 /*
@@ -19,7 +20,7 @@ import (
 var filterStrings = []string{"adserver"}
 
 type Xfinity struct {
-	Metadata MetaStruct
+	Metadata modules.MetaStruct
 }
 
 func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
