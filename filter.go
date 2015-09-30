@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/elazarl/goproxy"
@@ -38,52 +36,47 @@ func (cb ClosingBuffer) Close() (err error) {
 
 // Request filter function
 func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-	flag := 0
-	for _, i := range FILTER_STRINGS {
-		if strings.Contains(req.URL.String(), i) {
-			flag = 1
+	for i := range mods {
+		req, resp := mods[i].filterRequest(req, ctx)
+	}
+	/*
+		flag := 0
+		for _, i := range FILTER_STRINGS {
+			if strings.Contains(req.URL.String(), i) {
+				flag = 1
+			}
 		}
-	}
-	if flag == 0 {
-		log.Println("Req: ", req.Method, ": ", req.URL.String())
-	}
-
-	if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
-		if VERB {
-			fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
+		if flag == 0 {
+			log.Println("Req: ", req.Method, ": ", req.URL.String())
 		}
-		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
-	}
 
-	b := checkBody(&req.Body)
+		if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
+			if VERB {
+				fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
+			}
+			return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
+		}
 
-	// Flag for response spoofing
-	g := false
-	if strings.Contains(b, "adstate") && g {
-		//return req, goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
-		nresp := CreateResponse(req)
-		return req, &nresp
+		b := checkBody(&req.Body)
 
-		//fmt.Println(b)
-	}
+		// Flag for response spoofing
+		g := false
+		if strings.Contains(b, "adstate") && g {
+			//return req, goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
+			nresp := CreateResponse(req)
+			return req, &nresp
 
+			//fmt.Println(b)
+		}
+	*/
 	return req, nil
 }
 
 // Response filter function
 func filterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
-	for _, i := range FILTER_STRINGS {
-		if strings.Contains(resp.Request.URL.String(), i) {
-			fmt.Println("Adserver found... blocking: ", resp.Request.URL.String())
-			bb := ClosingBuffer{bytes.NewBufferString("0")}
-			resp.Body = bb
-		}
+	for i := range mods {
+		resp := mods[i].filterResponse(resp, ctx)
 	}
-
-	//	if strings.Contains(resp.Request.URL.String(), "s.hulu.com") {
-	//		PrintResponse(*resp)
-	//	}
-
 	return resp
 }
 

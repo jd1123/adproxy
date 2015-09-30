@@ -7,9 +7,14 @@ import (
 	"os"
 
 	"github.com/elazarl/goproxy"
+	"github.com/jd1123/adproxy/modules"
 )
 
+var mods = make([]modules.Module, 0)
+
 func main() {
+	RegisterModule(modules.Xfinity{})
+
 	fmt.Println("Starting ad proxy on port " + LISTENPORT)
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.Verbose = false
@@ -31,6 +36,8 @@ func main() {
 	})
 
 	log.SetOutput(f)
+	// Setup modules
+	mods = append(mods, Xfinity{})
 
 	if FILTER {
 		proxy.OnRequest().DoFunc(filterRequest)
