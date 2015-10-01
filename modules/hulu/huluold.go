@@ -1,4 +1,4 @@
-package modules
+package hulu
 
 var FILTER = true
 

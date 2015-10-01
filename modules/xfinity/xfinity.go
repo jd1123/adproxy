@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -23,7 +22,12 @@ type Xfinity struct {
 	Metadata modules.MetaStruct
 }
 
-func (x Xfinity) Init(){
+func NewXfinity() *Xfinity {
+	ms := modules.NewMetaStruct("Xfinity Filter", "0.1", "Xfinity onDeman")
+	return &Xfinity{*ms}
+}
+
+func (x Xfinity) Init() {
 	x.Metadata.ModuleName = "Xfinity Filter"
 	x.Metadata.VersionNumber = "0.1"
 	x.Metadata.Service = "Xfinity onDemand"
@@ -41,6 +45,14 @@ func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *htt
 }
 
 func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
+	// Block analytics requests
+	if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
+		fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
+		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
+	}
+
+	// This does nothing besides log...should be moved to
+	// filter.go
 	flag := 0
 	for _, i := range filterStrings {
 		if strings.Contains(req.URL.String(), i) {
@@ -49,12 +61,6 @@ func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.
 	}
 	if flag == 0 {
 		log.Println("Req: ", req.Method, ": ", req.URL.String())
-	}
-	
-	// Block analytics requests
-	if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
-		fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
-		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
 	}
 
 	return req, nil

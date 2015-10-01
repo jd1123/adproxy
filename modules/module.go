@@ -17,6 +17,10 @@ type MetaStruct struct {
 	Service       string
 }
 
+func NewMetaStruct(name, ver, service string) *MetaStruct {
+	return &MetaStruct{name, ver, service}
+}
+
 func (m MetaStruct) PrintMetaData() {
 	fmt.Println("Module", m.ModuleName, "loaded...")
 	fmt.Println("Version", m.VersionNumber)
