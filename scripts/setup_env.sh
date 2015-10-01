@@ -73,14 +73,16 @@ install_adproxy(){
 	echo "About to install the adproxy..."
 	echo "This assumes your code is sitting in ~/code/go/src/adproxy"
 	go get github.com/elazarl/goproxy
-	mkdir -p ~/code/go/src/
-	cd ~/code/go/src
+	mkdir -p ~/code/go/src/github.com/jd1123
+	cd ~/code/go/src/github.com/jd1123
 	git clone git@gitlab.crumpleup.com:jd/adproxy.git
-	cd ~/code/go/src/adproxy
+	cd ~/code/go/src/github.com/jd1123/adproxy
 	go build
 	sudo cp adproxy /usr/sbin
 	sudo cp ~/code/go/src/adproxy/scripts/initscripts/adproxy /etc/init.d/
 	sudo update-rc.d adproxy enable
+	cd ~/code/go/src/github.com/jd1123/adproxy/scripts
+	sudo ./iptables-enable.sh
 }
 
 usage(){

@@ -18,13 +18,12 @@ To get this to work you need:
 
 Yes, TLS will break this. Need to work on this.
 
-## Shout outs
-
-Thank you to elazarl (https://github.com/elazarl) for the goproxy project, on which this is based (http://github.com/elazarl/goproxy). 
-
 ## How do I get it to work?
 
-It's not done. Run the setup script it will turn your pi into a shitty router. It needs to be looked at because it will only work for certain wifi dongles. You also need to follow additional instructions about getting hostapd to work for the RASOMETHINGOROTHER chipset.
+1. Set up your Pi with Raspbian. Update it (apt-get update, apt-get upgrade)
+2. Clone this repo on the pi
+3. Run setup\_env.sh in the scripts folder (this will also clone this repo into the correct directory)
+4. Enjoy.
 
 ## Why do this?
 
