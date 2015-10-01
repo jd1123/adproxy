@@ -24,6 +24,7 @@ func (m MetaStruct) PrintMetaData() {
 }
 
 type Module interface {
+	Init()
 	FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response)
 	FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response
 }

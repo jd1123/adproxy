@@ -8,6 +8,7 @@ import (
 )
 
 func RegisterModule(m modules.Module) {
+	m.Init()
 	mods = append(mods, m)
 }
 

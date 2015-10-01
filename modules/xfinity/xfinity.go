@@ -23,6 +23,12 @@ type Xfinity struct {
 	Metadata modules.MetaStruct
 }
 
+func (x Xfinity) Init(){
+	x.Metadata.ModuleName = "Xfinity Filter"
+	x.Metadata.VersionNumber = "0.1"
+	x.Metadata.Service = "Xfinity onDemand"
+}
+
 func (x Xfinity) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 	for _, i := range filterStrings {
 		if strings.Contains(resp.Request.URL.String(), i) {
@@ -44,23 +50,14 @@ func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.
 	if flag == 0 {
 		log.Println("Req: ", req.Method, ": ", req.URL.String())
 	}
-
+	
+	// Block analytics requests
 	if strings.Contains(req.URL.String(), "analytics.xcal.tv") {
 		fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
 		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
 	}
 
-	//b := checkBody(&req.Body)
-
 	return req, nil
-}
-
-func checkBody(rc *io.ReadCloser) string {
-	var buf []byte
-	buf, _ = ioutil.ReadAll(*rc)
-	b := string(buf)
-	*rc = ioutil.NopCloser(bytes.NewBuffer(buf))
-	return b
 }
 
 // struct to implement io.ReadCloser

@@ -20,10 +20,14 @@ type Hulu struct {
 	Metadata MetaStruct
 }
 
+func (h Hulu) Init(){
+}
+
+// Block filterStrings from sending a response
 func (h Hulu) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.Response {
 	for _, i := range filterStrings {
 		if strings.Contains(resp.Request.URL.String(), i) {
-			fmt.Println("Adserver found... blocking: ", resp.Request.URL.String())
+			fmt.Println("Adserver found in ", h.MetaData.ModuleName, "... blocking: ", resp.Request.URL.String())
 			bb := ClosingBuffer{bytes.NewBufferString("0")}
 			resp.Body = bb
 		}
