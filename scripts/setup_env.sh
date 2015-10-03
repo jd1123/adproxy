@@ -112,6 +112,9 @@ finally(){
 	sudo update-rc.d hostapd enable
 	sudo update-rc.h isc-dhcp-server enable
 	setup_iptables
+	cd ~/code/go/src/adproxy/scripts
+	sudo cp /etc/motd /etc/motd.bak
+	sudo cp newmotd /etc/motd
 }
 
 usage
