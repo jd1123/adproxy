@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+func TestFilterResponse(t *testing.T) {
+}
+
 func TestNewResponse(t *testing.T) {
 	req, _ := http.NewRequest("GET", "http://127.0.0.1", nil)
 	nresp := CreateResponse(req)
