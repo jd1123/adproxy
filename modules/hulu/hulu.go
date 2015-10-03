@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -48,18 +47,6 @@ func (h Hulu) FilterResponse(resp *http.Response, ctx *goproxy.ProxyCtx) *http.R
 }
 
 func (h Hulu) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *http.Response) {
-	// This does nothing besides log...should be moved to
-	// filter.go
-	flag := 0
-	for _, i := range filterStrings {
-		if strings.Contains(req.URL.String(), i) {
-			flag = 1
-		}
-	}
-	if flag == 0 {
-		log.Println("Req: ", req.Method, ": ", req.URL.String())
-	}
-
 	return req, nil
 }
 

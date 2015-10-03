@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strings"
 
@@ -23,7 +22,7 @@ type Xfinity struct {
 }
 
 func NewXfinity() *Xfinity {
-	ms := modules.NewMetaStruct("Xfinity Filter", "0.1", "Xfinity onDeman")
+	ms := modules.NewMetaStruct("Xfinity Filter", "0.1", "Xfinity onDemand")
 	return &Xfinity{*ms}
 }
 
@@ -50,19 +49,6 @@ func (x Xfinity) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.
 		fmt.Println(req.URL.String(), "Analytics Request Intercepted...")
 		return req, goproxy.NewResponse(req, goproxy.ContentTypeText, http.StatusOK, "0")
 	}
-
-	// This does nothing besides log...should be moved to
-	// filter.go
-	flag := 0
-	for _, i := range filterStrings {
-		if strings.Contains(req.URL.String(), i) {
-			flag = 1
-		}
-	}
-	if flag == 0 {
-		log.Println("Req: ", req.Method, ": ", req.URL.String())
-	}
-
 	return req, nil
 }
 

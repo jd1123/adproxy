@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -20,6 +21,10 @@ func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *ht
 	for i := range mods {
 		req, resp = mods[i].FilterRequest(req, ctx)
 	}
+
+	log.Println("Req: ", req.Method, ": ", req.URL.String())
+
+	return req, nil
 	return req, resp
 }
 
