@@ -22,6 +22,7 @@ func filterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*http.Request, *ht
 		req, resp = mods[i].FilterRequest(req, ctx)
 	}
 
+	// FIXME: add if to log based on config settings
 	log.Println("Req: ", req.Method, ": ", req.URL.String())
 
 	return req, nil
