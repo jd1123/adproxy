@@ -1,18 +1,17 @@
-package main
+package stopper
 
 import (
 	"io"
 	"net/http"
-
-	"github.com/jd1123/adproxy/stopper"
+	"testing"
 )
 
 func hello(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "Hello World!")
 }
 
-func main() {
-
+func testStopper(t *testing.T) {
 	http.HandleFunc("/", hello)
-	stopper.StoppableListenAndServe(":9999", nil)
+	StoppableListenAndServe(":9999", nil)
+
 }

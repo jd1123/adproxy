@@ -42,7 +42,8 @@ func CreateResponse(req *http.Request) http.Response {
 	n := time.Now()
 	layout := "Sun, 09 Aug 1999 18:20:22 GMT"
 	finalDate := n.Format(layout)
-	nresp := goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, FAKERESPONSE)
+	respBody := LoadFakeResponse()
+	nresp := goproxy.NewResponse(req, ContentTypeJSON, http.StatusOK, respBody)
 	nresp.Status = "200 OK"
 	nresp.ProtoMajor = 1
 	nresp.ProtoMinor = 1

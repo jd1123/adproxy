@@ -17,8 +17,8 @@ func (cb ClosingBuffer) Close() (err error) {
 	return
 }
 
-func LoadFakeResponse() string {
-	f, err := os.OpenFile("/etc/adproxy/dat/response", os.O_RDONLY, 0660)
+func LoadResponseFromFile(filename string) string {
+	f, err := os.OpenFile(filename, os.O_RDONLY, 0660)
 	if err != nil {
 		fmt.Println("File Error: ", err)
 		os.Exit(1)
@@ -30,6 +30,14 @@ func LoadFakeResponse() string {
 		os.Exit(1)
 	}
 	return string(buff)
+}
+
+func LoadFakeResponse() string {
+	return LoadResponseFromFile("/etc/adproxy/dat/response")
+}
+
+func LoadCommericalFreeResponse() string {
+	return LoadResponseFromFile("/etc/adproxy/dat/responsenocommercial")
 }
 
 func LoadFilterList() []string {
