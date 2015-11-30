@@ -3,15 +3,16 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"log"
+	"net"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 	"time"
 
 	"github.com/elazarl/goproxy"
+	"github.com/hydrogen18/stoppableListener"
 	"github.com/jd1123/adproxy/modules"
-	"github.com/jd1123/adproxy/stopper"
 )
 
 type TestModule struct {
@@ -52,7 +53,8 @@ func (tm TestModule) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*h
 	return req, nil
 }
 
-func setup() {
+// Test Harness for testing the filters
+func setup() *stoppableListener.StoppableListener {
 	RegisterModule(NewTestModule())
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.NonproxyHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -69,12 +71,33 @@ func setup() {
 
 	// Start her up
 	//log.Fatalln(http.ListenAndServe(":9999", proxy))
-	log.Fatalln(stopper.StoppableListenAndServe(":9999", proxy))
+	listener, err := net.Listen("tcp", ":8080")
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	sl, err := stoppableListener.New(listener)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	server := http.Server{Handler: proxy}
 
+	fmt.Println("Serving HTTP for testing...")
+	go func() {
+		server.Serve(sl)
+	}()
+
+	return sl
+}
+
+func tearDown(sl *stoppableListener.StoppableListener) {
+	sl.Stop()
 }
 
 func TestFilterResponse(t *testing.T) {
-	setup()
+	sl := setup()
+	tearDown(sl)
 }
 
 /*
