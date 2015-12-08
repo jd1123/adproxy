@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -53,8 +54,30 @@ func (tm TestModule) FilterRequest(req *http.Request, ctx *goproxy.ProxyCtx) (*h
 	return req, nil
 }
 
+func ListenAndServeStop(addr string, handler http.Handler, wg *sync.WaitGroup) *stoppableListener.StoppableListener {
+	listener, err := net.Listen("tcp", addr)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+	sl, err := stoppableListener.New(listener)
+	if err != nil {
+		fmt.Println("Error:", err)
+		os.Exit(1)
+	}
+
+	server := &http.Server{Addr: addr, Handler: handler}
+	go func() {
+		wg.Add(1)
+		defer wg.Done()
+		server.Serve(sl)
+	}()
+	return sl
+}
+
 // Test Harness for testing the filters
-func setup() *stoppableListener.StoppableListener {
+func setup(wg *sync.WaitGroup) *stoppableListener.StoppableListener {
+	os.Setenv("HTTP_PROXY", "http://127.0.0.1:9999")
 	RegisterModule(NewTestModule())
 	proxy := goproxy.NewProxyHttpServer()
 	proxy.NonproxyHandler = http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -68,26 +91,27 @@ func setup() *stoppableListener.StoppableListener {
 	})
 	proxy.OnRequest().DoFunc(filterRequest)
 	proxy.OnResponse().DoFunc(filterResponse)
-
-	// Start her up
-	//log.Fatalln(http.ListenAndServe(":9999", proxy))
-	listener, err := net.Listen("tcp", ":8080")
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-	sl, err := stoppableListener.New(listener)
-	if err != nil {
-		fmt.Println("Error:", err)
-		os.Exit(1)
-	}
-	server := http.Server{Handler: proxy}
+	//	listener, err := net.Listen("tcp", ":9999")
+	//	if err != nil {
+	//		fmt.Println("Error:", err)
+	//		os.Exit(1)
+	//	}
+	//	sl, err := stoppableListener.New(listener)
+	//	if err != nil {
+	//		fmt.Println("Error:", err)
+	//		os.Exit(1)
+	//	}
+	//	server := http.Server{Addr: ":9999", Handler: proxy}
 
 	fmt.Println("Serving HTTP for testing...")
-	go func() {
-		server.Serve(sl)
-	}()
-
+	//	go func() {
+	//		server.Serve(sl)
+	//	}()
+	sl := ListenAndServeStop(":9999", proxy, wg)
+	//if err != nil {
+	//	fmt.Println("Error: ", err)
+	//	os.Exit(1)
+	//}
 	return sl
 }
 
@@ -96,8 +120,17 @@ func tearDown(sl *stoppableListener.StoppableListener) {
 }
 
 func TestFilterResponse(t *testing.T) {
-	sl := setup()
-	tearDown(sl)
+	var wg sync.WaitGroup
+	setup(&wg)
+	fmt.Println("Getting")
+	//r, _ := http.Get("http://filmgarb.com")
+	fmt.Println("Got")
+	wg.Wait()
+	//defer r.Body.Close()
+	//fmt.Println(r)
+	//body, _ := ioutil.ReadAll(r.Body)
+	//fmt.Println(body)
+	//tearDown(sl)
 }
 
 /*
