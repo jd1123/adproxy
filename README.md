@@ -32,4 +32,3 @@ A friend asked me this once. I'll give you the same answer I gave him. I don't k
 ## TODO
 
 * Make it work for Hulu
-* Allow devices without an HTTP proxy setting to use this as well
