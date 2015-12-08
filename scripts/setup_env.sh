@@ -7,19 +7,42 @@ install_utils(){
 install_go(){
 	# from source
 	cd
+	mkdir opt
+	cd opt
 	git clone https://github.com/golang/go
-	cd go
+	mv go go1.4
+	cd go1.4
 	git checkout release-branch.go1.4
 	cd src
 	./all.bash
+	cd $HOME/opt
+	ln -s go1.4 go_built
 	cd
 	mkdir -p ~/code/go
-	echo "export PATH=$PATH:$HOME/go/bin" >> .bashrc
-	echo "export GOPATH=$HOME/code/go" >> .bashrc
+	echo 'export PATH=$PATH:$HOME/opt/go_built/bin' >> .bashrc
+	echo 'export GOPATH=$HOME/code/go' >> .bashrc
+	echo 'export GOROOT=$HOME/opt/go_built' >> .bashrc
+	echo 'export GOROOT_BOOTSTRAP=$GOROOT' >> .bashrc
 	echo
 	echo "Your code will now sit in ~/code/go"
 	source ~/.bashrc
 	echo "Go 1.4 should work now..."	
+}
+
+upgrade_go(){
+	echo "Upgrading Go..."
+	source ~/.bashrc
+	cd $HOME/opt
+	git clone https://github.com/golang/go
+	mv go go1.5
+	cd go1.5
+	git checkout release-branch.go1.5
+	cd src
+	./all.bash
+	cd $HOME/opt
+	ln -s go1.5 go_built
+	echo "Go 1.5 should work now....\nPlease log out and back in"
+
 }
 
 install_dhcp_server(){
