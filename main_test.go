@@ -67,11 +67,11 @@ func ListenAndServeStop(addr string, handler http.Handler, wg *sync.WaitGroup) *
 	}
 
 	server := &http.Server{Addr: addr, Handler: handler}
-	go func() {
-		wg.Add(1)
-		defer wg.Done()
-		server.Serve(sl)
-	}()
+	select {
+	case <-stoppableListener.stop:
+		fmt.Println("Stopped")
+	}
+
 	return sl
 }
 

@@ -14,10 +14,6 @@ To get this to work you need:
 * 1 Wifi Dongle (this assumes the Edimax dongle from Amazon)
 * 1 Ethernet Cable
 
-## Can it be broken?
-
-Yes, TLS will break this. Need to work on this.
-
 ## How do I get it to work?
 
 1. Set up your Pi with Raspbian. Update it (apt-get update, apt-get upgrade)
@@ -29,6 +25,6 @@ Yes, TLS will break this. Need to work on this.
 
 A friend asked me this once. I'll give you the same answer I gave him. I don't know!
 
-## TODO
+## Notes
 
-* Make it work for Hulu
+This is a very buggy project. It sucessfully blocks ads for what my wife watches on a regular basis. If you like it, please feel free to hack on it and send a pull request.
